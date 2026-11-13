@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcare-app
+  namespace: healthcare
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: healthcare
+  template:
+    metadata:
+      labels:
+        app: healthcare
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: app
+        image: jananisoma/healthcare-app:latest
+        ports:
+        - containerPort: 3000
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
